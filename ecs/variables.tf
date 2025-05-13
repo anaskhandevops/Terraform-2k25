@@ -493,7 +493,38 @@ variable "ecs_service_launch_type" {
 variable "ecs_service_assign_public_ip" {
   description = "Whether to assign public IPs to tasks (typically false for private subnets)."
   type        = bool
-  default     = false
+  default     = true
 }
 
 
+# --- ECS Service Auto Scaling Configuration ---
+
+variable "ecs_autoscale_min_tasks" {
+  description = "Minimum number of tasks for the ECS service auto scaling."
+  type        = number
+  default     = 1
+}
+
+variable "ecs_autoscale_max_tasks" {
+  description = "Maximum number of tasks for the ECS service auto scaling."
+  type        = number
+  default     = 3
+}
+
+variable "ecs_autoscale_requests_target_per_task" {
+  description = "Target average Application Load Balancer requests per task per minute."
+  type        = number
+  default     = 1000 # Adjust based on your application's expected performance
+}
+
+variable "ecs_autoscale_cpu_target_percent" {
+  description = "Target average CPU utilization percentage (used if CPU policy is enabled)."
+  type        = number
+  default     = 75
+}
+
+variable "ecs_autoscale_memory_target_percent" {
+  description = "Target average Memory utilization percentage (used if Memory policy is enabled)."
+  type        = number
+  default     = 75
+}

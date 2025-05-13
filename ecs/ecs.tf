@@ -203,6 +203,19 @@ resource "aws_ecs_task_definition" "app_task_def" {
           "awslogs-region"        = var.aws_region
           "awslogs-stream-prefix" = var.log_stream_prefix
         }
+      },
+
+      healthCheck = {
+        # Command to run inside the container. Exit code 0 = healthy, non-zero = unhealthy.
+        # This command tries to get the headers from the local Nginx server.
+        command = [
+          "CMD-SHELL",
+          "curl -f http://localhost:${var.container_port}/ || exit 1"
+        ]
+        interval    = 30 # Time between checks (seconds)
+        timeout     = 5  # Time to wait for command to return (seconds)
+        retries     = 3  # Number of consecutive failures before marking unhealthy
+        startPeriod = 15 # Optional grace period after container starts (seconds)
       }
 
     }
@@ -225,18 +238,21 @@ resource "aws_ecs_task_definition" "app_task_def" {
 # --- ECS Service Definition ---
 # This resource runs and maintains your task definition on the cluster
 resource "aws_ecs_service" "main_app_service" {
-  name            = var.ecs_service_name
-  cluster         = aws_ecs_cluster.main_cluster.arn
-  task_definition = aws_ecs_task_definition.app_task_def.arn
-  desired_count   = var.ecs_service_desired_count
-  launch_type     = var.ecs_service_launch_type
+  name                   = var.ecs_service_name
+  cluster                = aws_ecs_cluster.main_cluster.arn
+  task_definition        = aws_ecs_task_definition.app_task_def.arn
+  desired_count          = var.ecs_service_desired_count
+  launch_type            = var.ecs_service_launch_type
+  enable_execute_command = true
+
 
   network_configuration {
     subnets = [
       aws_subnet.private_subnet_1.id,
       aws_subnet.private_subnet_2.id
     ]
-    security_groups  = [aws_security_group.ecs_task_sg.id]
+    security_groups = [aws_security_group.ecs_task_sg.id]
+
     assign_public_ip = var.ecs_service_assign_public_ip
   }
 

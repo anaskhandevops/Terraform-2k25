@@ -43,3 +43,34 @@ output "web_server_security_group_arn" {
   description = "The ARN of the security group created for the web server."
   value       = aws_security_group.web_server_sg.arn
 }
+
+
+# --- Auto Scaling Target Output ---
+
+output "ecs_autoscaling_target_resource_id" {
+  description = "The resource ID of the registered scalable target."
+  value       = aws_appautoscaling_target.ecs_service_scaling_target.resource_id
+}
+
+# --- Auto Scaling Policy Outputs ---
+
+output "ecs_alb_requests_scaling_policy_arn" {
+  description = "The ARN of the ALB Request Count scaling policy."
+  value       = aws_appautoscaling_policy.ecs_service_alb_requests_scaling_policy.arn
+}
+
+output "ecs_alb_requests_scaling_policy_name" {
+  description = "The name of the ALB Request Count scaling policy."
+  value       = aws_appautoscaling_policy.ecs_service_alb_requests_scaling_policy.name
+}
+
+# --- Optional: Outputs for other policies (Uncomment if policies are enabled) ---
+# output "ecs_cpu_scaling_policy_arn" {
+#   description = "The ARN of the CPU scaling policy."
+#   value       = aws_appautoscaling_policy.ecs_service_cpu_scaling_policy.arn
+# }
+#
+# output "ecs_memory_scaling_policy_arn" {
+#   description = "The ARN of the Memory scaling policy."
+#   value       = aws_appautoscaling_policy.ecs_service_memory_scaling_policy.arn
+# }
